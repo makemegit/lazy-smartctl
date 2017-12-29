@@ -1,2 +1,2 @@
 # lazy-smartctl
-smartctl only output problems not all info
+lazy-smartctl only output problems not all info
