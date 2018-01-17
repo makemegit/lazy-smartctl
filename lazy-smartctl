@@ -184,11 +184,19 @@ UDMA_CRC_Error_Count()
 			echo -e $UWhite"Cable or Interface Errors:"$NC $Red$udma$NC
 	fi	
 }
+Current_Pending_Sector()
+{
+	local pending=$(cat $TEMPFILE | grep Current_Pending_Sector | awk '{print $10}')
+	if [[ $"pending" -ne "0" ]]
+		then 
+			echo -e $UWhite"Current_Pending_Sectors:"$NC $Red$pending$NC
+	fi	
+}
 # ====output===
 echo 
 echo -e $UWhite"Device:"$NC $BlueLite$(Model_Family)$NC"-" $Blue$(Rotation_Rate)$NC"-" $(Device_Size) 
 echo -e $(Power_On_Hours) $(Host_Reads_32MiB) $(Host_Writes_32MiB)
-echo -e $(Healt_Status) $(Reallocated_Sector_Ct) $(Offline_Uncorrectable) $(UDMA_CRC_Error_Count) $(Smart_Error_Count) $(Remaining_Lifetime_Perc) $(Temperature_Celsius) 
+echo -e $(Healt_Status) $(Reallocated_Sector_Ct) $(Offline_Uncorrectable) $(UDMA_CRC_Error_Count) $(Smart_Error_Count) $(Current_Pending_Sector) $(Remaining_Lifetime_Perc) $(Temperature_Celsius) 
 echo
 # ===cleaning===
 rm $TEMPFILE
