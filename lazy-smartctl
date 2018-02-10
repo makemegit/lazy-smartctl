@@ -59,7 +59,7 @@ smartctl $DEVICE > $TEMPFILE
 # ===functionc===
 Model_Family ()
 {
-	cat $TEMPFILE | grep "Model Family" | awk '{ s = ""; for (i = 3; i <= NF; i++) s = s $i " "; print s }'
+	cat $TEMPFILE | grep "Device Model" | awk '{ s = ""; for (i = 3; i <= NF; i++) s = s $i " "; print s }'
 }
 Rotation_Rate ()
 {
@@ -105,6 +105,24 @@ Host_Reads_32MiB ()
 Host_Writes_32MiB ()
 {
 	local totalwrite=$(cat $TEMPFILE | grep Host_Writes_32MiB | awk '{$10=$10/32; print $10}')
+	# Check to see if the option is included
+	if [ ! -z "$totalwrite" ]
+		then
+			echo $UWhite"Total Writes:"$NC $RedLite$totalwrite "GB"$NC
+	fi
+}
+Total_LBAs_Read ()
+{
+	local totalreads=$(cat $TEMPFILE | grep Total_LBAs_Read | awk '{$10=$10/32; print $10}')
+	# Check to see if the option is included
+	if [ ! -z "$totalreads" ]
+		then
+			echo $UWhite"Total Reads:"$NC $Yellow$totalreads "GB"$NC
+	fi
+}
+Total_LBAs_Written ()
+{
+	local totalwrite=$(cat $TEMPFILE | grep Total_LBAs_Written | awk '{$10=$10/32; print $10}')
 	# Check to see if the option is included
 	if [ ! -z "$totalwrite" ]
 		then
@@ -195,7 +213,7 @@ Current_Pending_Sector()
 # ====output===
 echo 
 echo -e $UWhite"Device:"$NC $BlueLite$(Model_Family)$NC"-" $Blue$(Rotation_Rate)$NC"-" $(Device_Size) 
-echo -e $(Power_On_Hours) $(Host_Reads_32MiB) $(Host_Writes_32MiB)
+echo -e $(Power_On_Hours) $(Host_Reads_32MiB) $(Host_Writes_32MiB) $(Total_LBAs_Read) $(Total_LBAs_Written)
 echo -e $(Healt_Status) $(Reallocated_Sector_Ct) $(Offline_Uncorrectable) $(UDMA_CRC_Error_Count) $(Smart_Error_Count) $(Current_Pending_Sector) $(Remaining_Lifetime_Perc) $(Temperature_Celsius) 
 echo
 # ===cleaning===
