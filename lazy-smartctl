@@ -115,7 +115,7 @@ Host_Writes_32MiB ()
 }
 Total_LBAs_Read ()
 {
-	local totalreads=$(cat $TEMPFILE | grep Total_LBAs_Read | awk '{$10=$10/8/1024/1024; printf "%f\n",$10}')
+	local totalreads=$(cat $TEMPFILE | grep Total_LBAs_Read | awk '{$10=$10*512/1024/1024/1024; printf "%f\n",$10}')
 	# Check to see if the option is included
 	if [ ! -z "$totalreads" ]
 		then
@@ -124,7 +124,7 @@ Total_LBAs_Read ()
 }
 Total_LBAs_Written ()
 {
-	local totalwrite=$(cat $TEMPFILE | grep Total_LBAs_Written | awk '{$10=$10/8/1024/1024; printf "%f\n",$10}')
+	local totalwrite=$(cat $TEMPFILE | grep Total_LBAs_Written | awk '{$10=$10*512/1024/1024/1024; printf "%f\n",$10}')
 	# Check to see if the option is included
 	if [ ! -z "$totalwrite" ]
 		then
