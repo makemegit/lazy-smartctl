@@ -46,7 +46,7 @@ BWhite='\033[1;37m'       # White
 BGrey='\033[1;90m'        # Grey
 # ===variables===
 DEVICE="$@"
-#TEMPFILE="/tmp/smartctl_"
+#TEMPFILE="/tmp/smartctl_20190412140551"
 TEMPFILE="/tmp/smartctl_$(date +%Y%m%d%H%M%S)"
 CELSIUS=$'\xc2\xb0'C
 # ===help option===
@@ -97,7 +97,7 @@ Power_On_Hours ()
 }
 Host_Reads_32MiB ()
 {
-	local totalreads=$(cat $TEMPFILE | grep Host_Reads_32MiB | awk '{$10=$10/32; print $10}')
+	local totalreads=$(cat $TEMPFILE | grep Host_Reads_32MiB | awk '{$10=$10/32; printf "%f\n",$10}')
 	# Check to see if the option is included
 	if [ ! -z "$totalreads" ]
 		then
@@ -106,7 +106,7 @@ Host_Reads_32MiB ()
 }
 Host_Writes_32MiB ()
 {
-	local totalwrite=$(cat $TEMPFILE | grep Host_Writes_32MiB | awk '{$10=$10/32; print $10}')
+	local totalwrite=$(cat $TEMPFILE | grep Host_Writes_32MiB | awk '{$10=$10/32; printf "%f\n",$10}')
 	# Check to see if the option is included
 	if [ ! -z "$totalwrite" ]
 		then
@@ -115,7 +115,7 @@ Host_Writes_32MiB ()
 }
 Total_LBAs_Read ()
 {
-	local totalreads=$(cat $TEMPFILE | grep Total_LBAs_Read | awk '{$10=$10/8/1024/1024; print $10}')
+	local totalreads=$(cat $TEMPFILE | grep Total_LBAs_Read | awk '{$10=$10/8/1024/1024; printf "%f\n",$10}')
 	# Check to see if the option is included
 	if [ ! -z "$totalreads" ]
 		then
@@ -124,7 +124,7 @@ Total_LBAs_Read ()
 }
 Total_LBAs_Written ()
 {
-	local totalwrite=$(cat $TEMPFILE | grep Total_LBAs_Written | awk '{$10=$10/8/1024/1024; print $10}')
+	local totalwrite=$(cat $TEMPFILE | grep Total_LBAs_Written | awk '{$10=$10/8/1024/1024; printf "%f\n",$10}')
 	# Check to see if the option is included
 	if [ ! -z "$totalwrite" ]
 		then
@@ -133,7 +133,7 @@ Total_LBAs_Written ()
 }
 Lifetime_Writes_GiB ()
 {
-	local totalreads=$(cat $TEMPFILE | grep Lifetime_Writes_GiB | awk '{$10=$10/8; print $10}')
+	local totalreads=$(cat $TEMPFILE | grep Lifetime_Writes_GiB | awk '{$10=$10/8; printf "%f\n",$10}')
 	# Check to see if the option is included
 	if [ ! -z "$totalreads" ]
 		then
@@ -142,7 +142,7 @@ Lifetime_Writes_GiB ()
 }
 Lifetime_Reads_GiB ()
 {
-	local totalwrite=$(cat $TEMPFILE | grep Lifetime_Reads_GiB | awk '{$10=$10/8; print $10}')
+	local totalwrite=$(cat $TEMPFILE | grep Lifetime_Reads_GiB | awk '{$10=$10/8; printf "%f\n",$10}')
 	# Check to see if the option is included
 	if [ ! -z "$totalwrite" ]
 		then
