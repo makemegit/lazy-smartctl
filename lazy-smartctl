@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# lazy-smartctl 
+# lazy-smartctl
 #  by makeme
 #
 # ===colors===
@@ -46,6 +46,7 @@ BWhite='\033[1;37m'       # White
 BGrey='\033[1;90m'        # Grey
 # ===variables===
 DEVICE="$@"
+#TEMPFILE="/tmp/smartctl_"
 TEMPFILE="/tmp/smartctl_$(date +%Y%m%d%H%M%S)"
 CELSIUS=$'\xc2\xb0'C
 # ===help option===
@@ -67,7 +68,8 @@ Rotation_Rate ()
 }
 Power_On_Hours ()
 {
-	local ontime=$(cat $TEMPFILE | grep Power_On_Hours | awk 'NF>1{print $NF}')
+#	local ontime=$(cat $TEMPFILE | grep Power_On_Hours | awk 'NF>1{print $NF}')
+	local ontime=$(cat $TEMPFILE | grep Power_On_Hours | awk '{print $10}')
     local poweron=$ontime
     local hour=0
     local day=0
@@ -113,7 +115,7 @@ Host_Writes_32MiB ()
 }
 Total_LBAs_Read ()
 {
-	local totalreads=$(cat $TEMPFILE | grep Total_LBAs_Read | awk '{$10=$10/32; print $10}')
+	local totalreads=$(cat $TEMPFILE | grep Total_LBAs_Read | awk '{$10=$10/8/1024/1024; print $10}')
 	# Check to see if the option is included
 	if [ ! -z "$totalreads" ]
 		then
@@ -122,7 +124,25 @@ Total_LBAs_Read ()
 }
 Total_LBAs_Written ()
 {
-	local totalwrite=$(cat $TEMPFILE | grep Total_LBAs_Written | awk '{$10=$10/32; print $10}')
+	local totalwrite=$(cat $TEMPFILE | grep Total_LBAs_Written | awk '{$10=$10/8/1024/1024; print $10}')
+	# Check to see if the option is included
+	if [ ! -z "$totalwrite" ]
+		then
+			echo $UWhite"Total Writes:"$NC $RedLite$totalwrite "GB"$NC
+	fi
+}
+Lifetime_Writes_GiB ()
+{
+	local totalreads=$(cat $TEMPFILE | grep Lifetime_Writes_GiB | awk '{$10=$10/8; print $10}')
+	# Check to see if the option is included
+	if [ ! -z "$totalreads" ]
+		then
+			echo $UWhite"Total Reads:"$NC $Yellow$totalreads "GB"$NC
+	fi
+}
+Lifetime_Reads_GiB ()
+{
+	local totalwrite=$(cat $TEMPFILE | grep Lifetime_Reads_GiB | awk '{$10=$10/8; print $10}')
 	# Check to see if the option is included
 	if [ ! -z "$totalwrite" ]
 		then
@@ -152,7 +172,7 @@ Reallocated_Sector_Ct ()
 	local reallocated=$(cat $TEMPFILE | grep "Reallocated_Sector_Ct" | awk 'NF>1{print $NF}')
 	if [[ "$reallocated" -ne "0" ]]
 		then
-			echo -e $UWhite"Reallocated Sectors:"$NC $Red$reallocated$NC			
+			echo -e $UWhite"Reallocated Sectors:"$NC $Red$reallocated$NC
 	fi
 }
 Device_Size ()
@@ -176,7 +196,7 @@ Temperature_Celsius ()
 	local temperature=$(cat $TEMPFILE | grep Temperature_Celsius | awk '{print $10}')
 	local colorvar=$White
 	if (( $"temperature" > "20" && $"temperature" < "40" ))
-		then 
+		then
 		colorvar=$Green
 	elif (( $"temperature" < "5" || $"temperature" > "50" ))
 		then
@@ -190,7 +210,7 @@ Offline_Uncorrectable ()
 {
 	local offline=$(cat $TEMPFILE | grep Offline_Uncorrectable | awk '{print $10}')
 	if [[ $"offline" -ne "0" ]]
-		then 
+		then
 			echo -e $UWhite"Bad Sectors:"$NC $Red$offline$NC
 	fi
 }
@@ -198,23 +218,23 @@ UDMA_CRC_Error_Count()
 {
 	local udma=$(cat $TEMPFILE | grep UDMA_CRC_Error_Count | awk '{print $10}')
 	if [[ $"udma" -ne "0" ]]
-		then 
+		then
 			echo -e $UWhite"Cable or Interface Errors:"$NC $Red$udma$NC
-	fi	
+	fi
 }
 Current_Pending_Sector()
 {
 	local pending=$(cat $TEMPFILE | grep Current_Pending_Sector | awk '{print $10}')
 	if [[ $"pending" -ne "0" ]]
-		then 
+		then
 			echo -e $UWhite"Current_Pending_Sectors:"$NC $Red$pending$NC
-	fi	
+	fi
 }
 # ====output===
-echo 
-echo -e $UWhite"Device:"$NC $BlueLite$(Model_Family)$NC"-" $Blue$(Rotation_Rate)$NC"-" $(Device_Size) 
-echo -e $(Power_On_Hours) $(Host_Reads_32MiB) $(Host_Writes_32MiB) $(Total_LBAs_Read) $(Total_LBAs_Written)
-echo -e $(Healt_Status) $(Reallocated_Sector_Ct) $(Offline_Uncorrectable) $(UDMA_CRC_Error_Count) $(Smart_Error_Count) $(Current_Pending_Sector) $(Remaining_Lifetime_Perc) $(Temperature_Celsius) 
+echo
+echo -e $UWhite"Device:"$NC $BlueLite$(Model_Family)$NC"-" $Blue$(Rotation_Rate)$NC"-" $(Device_Size)
+echo -e $(Power_On_Hours) $(Host_Reads_32MiB) $(Host_Writes_32MiB) $(Total_LBAs_Read) $(Total_LBAs_Written) $(Lifetime_Writes_GiB) $(Lifetime_Reads_GiB)
+echo -e $(Healt_Status) $(Reallocated_Sector_Ct) $(Offline_Uncorrectable) $(UDMA_CRC_Error_Count) $(Smart_Error_Count) $(Current_Pending_Sector) $(Remaining_Lifetime_Perc) $(Temperature_Celsius)
 echo
 # ===cleaning===
 rm $TEMPFILE
